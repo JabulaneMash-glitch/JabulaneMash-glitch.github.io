@@ -1,1 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Name // Systems Developer</title>
+<meta name="description" content="Final-year BSc Information Technology student — software engineering, databases, secure systems.">
 
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- AOS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg-void:#090909;
+  --bg-panel:#121212;
+  --bg-panel-2:#0d1416;
+  --cyan:#00F5FF;
+  --blue:#009DFF;
+  --purple:#8A2BE2;
+  --white:#EAEAEA;
+  --line: rgba(0,245,255,0.18);
+  --glow-cyan: 0 0 18px rgba(0,245,255,.55);
+  --glow-purple: 0 0 22px rgba(138,43,226,.55);
+  --mode-accent: var(--cyan);
+}
+html.neon{
+  --mode-accent: var(--purple);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-void);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+::selection{background:var(--cyan);color:#000;}
+h1,h2,h3,.font-display{font-family:'Orbitron',sans-serif;}
+.font-hud{font-family:'Rajdhani',sans-serif;}
+.font-mono{font-family:'JetBrains Mono',monospace;}
+
+/* ============ BACKGROUND GRID ============ */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.055) 1px, transparent 1px);
+  background-size:42px 42px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 20%, black 40%, transparent 90%);
+}
+.vignette{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.65) 100%);
+}
+.scanlines{
+  position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.05;
+  background:repeating-linear-gradient(0deg, #fff 0px, transparent 1px, transparent 3px);
+}
+
+/* ============ CURSOR GLOW ============ */
+#cursor-glow{
+  position:fixed;top:0;left:0;width:26px;height:26px;border-radius:50%;
+  border:1px solid var(--mode-accent);
+  box-shadow:0 0 14px var(--mode-accent), inset 0 0 8px var(--mode-accent);
+  pointer-events:none;z-index:9999;transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s,opacity .3s;
+  mix-blend-mode:screen;
+}
+#cursor-dot{
+  position:fixed;top:0;left:0;width:4px;height:4px;border-radius:50%;
+  background:var(--mode-accent);pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);box-shadow:0 0 8px var(--mode-accent);
+}
+@media (max-width:900px){ #cursor-glow,#cursor-dot{display:none;} body{cursor:auto;} }
+
+/* ============ LOADING SCREEN ============ */
+#loader{
+  position:fixed;inset:0;background:#000;z-index:99999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+#loader canvas{position:absolute;inset:0;opacity:.35;}
+#loader.hide{opacity:0;visibility:hidden;}
+.boot-text{
+  font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:13px;
+  z-index:2;letter-spacing:1px;min-height:110px;text-align:left;white-space:pre;
+}
+.boot-bar{width:280px;height:3px;background:#1a1a1a;margin-top:18px;position:relative;z-index:2;overflow:hidden;}
+.boot-bar::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  animation:loadbar 2.2s ease forwards;
+}
+@keyframes loadbar{to{width:100%;}}
+
+/* ============ HUD TOP BAR ============ */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  backdrop-filter:blur(10px);background:rgba(9,9,9,.72);
+  border-bottom:1px solid var(--line);
+}
+#scroll-progress{
+  position:absolute;bottom:-1px;left:0;height:2px;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  box-shadow:0 0 8px var(--cyan);
+  transition:width .1s linear;
+}
+.hud-inner{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.5rem;max-width:1400px;margin:0 auto;}
+.nav-link{
+  font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1.5px;font-size:.8rem;
+  color:#9fb0b3;text-transform:uppercase;text-decoration:none;position:relative;padding:4px 2px;
+  transition:color .25s;
+}
+.nav-link:hover{color:var(--cyan);text-shadow:0 0 8px var(--cyan);}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--cyan);transition:width .25s;}
+.nav-link:hover::after{width:100%;}
+
+.mode-toggle{
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  border:1px solid var(--line);color:var(--cyan);background:rgba(0,245,255,.05);
+  padding:6px 12px;border-radius:2px;cursor:pointer;letter-spacing:1px;
+  transition:all .25s;
+}
+.mode-toggle:hover{background:rgba(0,245,255,.15);box-shadow:var(--glow-cyan);}
+
+/* ============ GLASS / NEON UTILITIES ============ */
+.glass{
+  background:rgba(18,18,18,.55);
+  border:1px solid var(--line);
+  backdrop-filter:blur(14px);
+  border-radius:6px;
+}
+.panel-corner{position:relative;}
+.panel-corner::before,.panel-corner::after{
+  content:'';position:absolute;width:14px;height:14px;
+  border-color:var(--cyan);opacity:.7;
+}
+.panel-corner::before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid;}
+.panel-corner::after{bottom:-1px;right:-1px;border-bottom:2px solid;border-right:2px solid;}
+
+.neon-border{
+  border:1px solid var(--line);
+  transition:border-color .3s, box-shadow .3s, transform .3s;
+}
+.neon-border:hover{
+  border-color:var(--mode-accent);
+  box-shadow:var(--glow-cyan);
+  transform:translateY(-4px);
+}
+html.neon .neon-border:hover{box-shadow:var(--glow-purple);}
+
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:3px;
+  color:var(--cyan);text-transform:uppercase;
+}
+.section-title{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(1.6rem,4vw,2.4rem);
+  color:var(--white);text-transform:uppercase;letter-spacing:1px;
+}
+.divider{height:1px;background:linear-gradient(90deg,var(--cyan),transparent);width:100%;margin-top:.6rem;}
+
+section{position:relative;z-index:5;padding:5.5rem 1.5rem;max-width:1300px;margin:0 auto;}
+
+/* ============ HERO ============ */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:6rem;}
+#hero-canvas{position:absolute;inset:0;z-index:0;}
+.glitch{position:relative;}
+.glitch::before,.glitch::after{
+  content:attr(data-text);position:absolute;left:0;top:0;width:100%;
+  overflow:hidden;background:var(--bg-void);
+}
+.glitch::before{color:var(--cyan);left:2px;text-shadow:-1px 0 var(--purple);animation:glitchTop 5s infinite linear alternate-reverse;}
+.glitch::after{color:var(--purple);left:-2px;text-shadow:1px 0 var(--cyan);animation:glitchBot 6s infinite linear alternate-reverse;}
+@keyframes glitchTop{0%{clip-path:inset(0 0 90% 0);}20%{clip-path:inset(30% 0 40% 0);}40%{clip-path:inset(60% 0 10% 0);}60%{clip-path:inset(10% 0 70% 0);}80%{clip-path:inset(80% 0 5% 0);}100%{clip-path:inset(40% 0 40% 0);}}
+@keyframes glitchBot{0%{clip-path:inset(90% 0 0 0);}25%{clip-path:inset(20% 0 60% 0);}50%{clip-path:inset(55% 0 20% 0);}75%{clip-path:inset(5% 0 80% 0);}100%{clip-path:inset(45% 0 45% 0);}}
+
+.type-cursor::after{content:'▍';color:var(--cyan);animation:blink 1s step-start infinite;}
+@keyframes blink{50%{opacity:0;}}
+
+.btn-primary{
+  font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1.5px;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));color:#02181a;
+  padding:.85rem 1.8rem;border-radius:3px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 0 20px rgba(0,245,255,.35);transition:transform .25s, box-shadow .25s;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 30px rgba(0,245,255,.6);}
+.btn-ghost{
+  font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1.5px;
+  border:1px solid var(--cyan);color:var(--cyan);padding:.85rem 1.8rem;border-radius:3px;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s;
+}
+.btn-ghost:hover{background:rgba(0,245,255,.1);box-shadow:var(--glow-cyan);}
+
+/* ============ TIMELINE ============ */
+.timeline{position:relative;margin-top:3rem;padding-left:2rem;border-left:2px solid var(--line);}
+.timeline-item{position:relative;padding-bottom:2.4rem;padding-left:1.5rem;}
+.timeline-item::before{
+  content:'';position:absolute;left:-2.55rem;top:2px;width:14px;height:14px;border-radius:50%;
+  background:var(--bg-void);border:2px solid var(--cyan);box-shadow:0 0 10px var(--cyan);
+}
+.timeline-item.future::before{border-color:var(--purple);box-shadow:0 0 10px var(--purple);}
+.timeline-item:last-child{padding-bottom:0;}
+
+/* ============ SKILL BARS ============ */
+.skill-bar-track{height:6px;background:#1c1c1c;border-radius:3px;overflow:hidden;margin-top:.5rem;}
+.skill-bar-fill{
+  height:100%;border-radius:3px;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  box-shadow:0 0 8px var(--cyan);
+  transition:width 1.4s cubic-bezier(.2,.8,.2,1);
+}
+.skill-card{padding:1.3rem 1.4rem;}
+.skill-tag{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#9fb0b3;
+  border:1px solid var(--line);padding:3px 9px;border-radius:2px;display:inline-block;margin:3px 5px 3px 0;
+  transition:all .2s;
+}
+.skill-tag:hover{color:var(--cyan);border-color:var(--cyan);}
+
+/* ============ PROJECT CARDS ============ */
+.project-card{padding:0;overflow:hidden;}
+.project-thumb{
+  height:170px;position:relative;overflow:hidden;
+  background:
+    linear-gradient(rgba(9,9,9,.4),rgba(9,9,9,.85)),
+    repeating-linear-gradient(45deg, rgba(0,245,255,.06) 0 2px, transparent 2px 12px);
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--line);
+}
+.project-thumb i{font-size:2.6rem;color:var(--mode-accent);opacity:.85;filter:drop-shadow(0 0 12px currentColor);}
+.tech-pill{
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--cyan);
+  background:rgba(0,245,255,.08);border:1px solid var(--line);padding:2px 8px;border-radius:2px;
+}
+.feature-list li{position:relative;padding-left:1.1rem;font-size:.85rem;color:#c7d0d1;margin-bottom:.3rem;}
+.feature-list li::before{content:'▹';position:absolute;left:0;color:var(--cyan);}
+.link-disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+
+/* ============ CERT BADGES ============ */
+.badge-hex{
+  width:64px;height:64px;
+  clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 0 18px rgba(0,245,255,.35);
+}
+.badge-hex i{color:#04121a;font-size:1.4rem;}
+
+/* ============ INTERESTS ============ */
+.interest-chip{
+  padding:1.1rem 1.3rem;display:flex;align-items:center;gap:.7rem;
+}
+.interest-chip span.ic{font-size:1.5rem;filter:drop-shadow(0 0 6px var(--cyan));}
+
+/* ============ ROADMAP ============ */
+.roadmap-track{display:flex;flex-direction:column;gap:0;}
+@media(min-width:900px){.roadmap-track{flex-direction:row;align-items:stretch;gap:0;}}
+.road-node{padding:1.1rem 1rem;text-align:center;flex:1;position:relative;}
+.road-arrow{display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:1.2rem;}
+@media(min-width:900px){.road-arrow{transform:none;}}
+.road-node.current{background:rgba(0,245,255,.08);}
+.road-node.goal{background:rgba(138,43,226,.1);}
+
+/* ============ CONTACT ============ */
+input, textarea{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--white);
+  padding:.8rem 1rem;border-radius:3px;font-family:'Inter',sans-serif;font-size:.9rem;
+  transition:border-color .25s, box-shadow .25s;
+}
+input:focus, textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 10px rgba(0,245,255,.25);}
+label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:1.5px;color:#9fb0b3;text-transform:uppercase;}
+
+footer{position:relative;z-index:5;border-top:1px solid var(--line);padding:2.4rem 1.5rem;margin-top:2rem;}
+.social-icon{
+  width:38px;height:38px;border:1px solid var(--line);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:#9fb0b3;text-decoration:none;
+  transition:all .25s;
+}
+.social-icon:hover{color:var(--cyan);border-color:var(--cyan);box-shadow:var(--glow-cyan);transform:translateY(-3px);}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:#0a0a0a;}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan),var(--purple));border-radius:4px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+}
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+  outline:2px solid var(--cyan); outline-offset:2px;
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-glow"></div>
+<div id="cursor-dot"></div>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <canvas id="matrix-canvas"></canvas>
+  <div class="boot-text font-mono" id="boot-text"></div>
+  <div class="boot-bar"></div>
+</div>
+
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+
+<!-- HUD -->
+<header id="hud">
+  <div id="scroll-progress"></div>
+  <div class="hud-inner">
+    <a href="#hero" class="font-display" style="font-weight:900;color:var(--cyan);text-decoration:none;font-size:1rem;letter-spacing:2px;">N//W</a>
+    <nav class="hidden md:flex" style="gap:1.8rem;">
+      <a href="#about" class="nav-link">About</a>
+      <a href="#skills" class="nav-link">Skills</a>
+      <a href="#projects" class="nav-link">Projects</a>
+      <a href="#certs" class="nav-link">Certs</a>
+      <a href="#experience" class="nav-link">Experience</a>
+      <a href="#roadmap" class="nav-link">Roadmap</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span class="font-mono" id="hud-clock" style="font-size:.72rem;color:#9fb0b3;display:none;" class="md:inline">00:00:00</span>
+      <button class="mode-toggle" id="mode-toggle">CYAN_MODE</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div style="position:relative;z-index:5;width:100%;display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:center;" class="md:grid-cols-[1.3fr_.7fr]">
+    <div data-aos="fade-up">
+      <p class="eyebrow" style="margin-bottom:1rem;">// SYSTEM_PROFILE :: FINAL_YEAR_STUDENT</p>
+      <h1 class="font-display glitch" data-text="YOUR NAME" style="font-size:clamp(2.4rem,7vw,5rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:1px;margin:0 0 .6rem 0;">YOUR NAME</h1>
+      <p class="font-hud" style="font-size:1.15rem;color:var(--cyan);font-weight:600;letter-spacing:.5px;margin:0 0 .3rem 0;">Final-Year BSc Information Technology Student</p>
+      <p class="font-hud" style="font-size:1rem;color:#9fb0b3;margin:0 0 1.6rem 0;">North-West University — Vaal Triangle Campus</p>
+      <p id="typewriter" class="font-mono type-cursor" style="font-size:1rem;color:var(--white);min-height:2.6rem;max-width:560px;line-height:1.6;"></p>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.8rem;">
+        <a href="#projects" class="btn-primary"><i class="fa-solid fa-diagram-project"></i> View Projects</a>
+        <a href="#" class="btn-ghost"><i class="fa-solid fa-download"></i> Download CV</a>
+        <a href="#contact" class="btn-ghost"><i class="fa-solid fa-satellite-dish"></i> Contact Me</a>
+      </div>
+    </div>
+    <div class="glass panel-corner neon-border" style="padding:1.4rem;justify-self:center;" data-aos="fade-left" data-aos-delay="200">
+      <div style="width:220px;height:220px;border-radius:4px;background:linear-gradient(160deg,#0d1416,#161b1c);display:flex;align-items:center;justify-content:center;border:1px solid var(--line);">
+        <i class="fa-solid fa-user-astronaut" style="font-size:4.2rem;color:var(--cyan);opacity:.75;filter:drop-shadow(0 0 16px rgba(0,245,255,.5));"></i>
+      </div>
+      <p class="font-mono" style="text-align:center;font-size:.68rem;color:#7f9092;margin-top:.8rem;">[ PHOTO_UPLINK // AWAITING_FEED ]</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="eyebrow">01 // IDENTITY</p>
+  <h2 class="section-title">About Me</h2>
+  <div class="divider" style="max-width:120px;"></div>
+  <div style="display:grid;grid-template-columns:1fr;gap:3rem;margin-top:2.5rem;" class="md:grid-cols-2">
+    <div data-aos="fade-right">
+      <p style="line-height:1.85;color:#c7d0d1;font-size:1rem;">
+        I am a final-year BSc Information Technology student at North-West University with a strong foundation in software engineering, database design, and systems development. Passionate about problem-solving, I enjoy building efficient back-end systems, working with databases, and developing dynamic applications.
+      </p>
+      <p style="line-height:1.85;color:#c7d0d1;font-size:1rem;margin-top:1.2rem;">
+        My technical toolkit includes Java, C#, SQL, and modern web development technologies. Through hands-on academic projects, I have designed and implemented relational databases, full-stack web applications, and decision support systems.
+      </p>
+      <p style="line-height:1.85;color:#c7d0d1;font-size:1rem;margin-top:1.2rem;">
+        I am actively seeking opportunities to leverage my software development and database management skills in an entry-level developer or IT role after graduation.
+      </p>
+    </div>
+    <div data-aos="fade-left">
+      <div class="timeline">
+        <div class="timeline-item">
+          <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">YEAR_01</p>
+          <p class="font-hud" style="font-weight:600;font-size:1.05rem;">Started BSc IT</p>
+        </div>
+        <div class="timeline-item">
+          <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">YEAR_02</p>
+          <p class="font-hud" style="font-weight:600;font-size:1.05rem;">Software Engineering</p>
+        </div>
+        <div class="timeline-item">
+          <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">YEAR_02–03</p>
+          <p class="font-hud" style="font-weight:600;font-size:1.05rem;">Database Design</p>
+        </div>
+        <div class="timeline-item">
+          <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">YEAR_03</p>
+          <p class="font-hud" style="font-weight:600;font-size:1.05rem;">Systems Development</p>
+        </div>
+        <div class="timeline-item">
+          <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">YEAR_04</p>
+          <p class="font-hud" style="font-weight:600;font-size:1.05rem;">Final Year</p>
+        </div>
+        <div class="timeline-item future">
+          <p class="font-mono" style="color:var(--purple);font-size:.75rem;">NEXT</p>
+          <p class="font-hud" style="font-weight:600;font-size:1.05rem;">Graduate Developer <span style="color:#7f9092;font-weight:400;font-size:.8rem;">(future goal)</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="eyebrow">02 // LOADOUT</p>
+  <h2 class="section-title">Technical Skills</h2>
+  <div class="divider" style="max-width:120px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:1.4rem;margin-top:2.5rem;" class="md:grid-cols-2 lg:grid-cols-3">
+
+    <div class="glass neon-border skill-card" data-aos="fade-up">
+      <h3 class="font-hud" style="color:var(--cyan);font-weight:700;font-size:1rem;letter-spacing:1px;"><i class="fa-solid fa-star"></i> Top Skills</h3>
+      <div class="skill-bar-track"><div class="skill-bar-fill" data-w="90"></div></div><p class="font-mono" style="font-size:.72rem;color:#9fb0b3;margin:.2rem 0 .7rem;">C# / .NET Framework</p>
+      <div class="skill-bar-track"><div class="skill-bar-fill" data-w="88"></div></div><p class="font-mono" style="font-size:.72rem;color:#9fb0b3;margin:.2rem 0 .7rem;">SQL & Database Design</p>
+      <div class="skill-bar-track"><div class="skill-bar-fill" data-w="75"></div></div><p class="font-mono" style="font-size:.72rem;color:#9fb0b3;margin:.2rem 0 0;">Microsoft Excel</p>
+    </div>
+
+    <div class="glass neon-border skill-card" data-aos="fade-up" data-aos-delay="100">
+      <h3 class="font-hud" style="color:var(--cyan);font-weight:700;font-size:1rem;letter-spacing:1px;"><i class="fa-solid fa-code"></i> Programming</h3>
+      <div>
+        <span class="skill-tag">Java</span><span class="skill-tag">C#</span><span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">HTML5</span><span class="skill-tag">CSS3</span><span class="skill-tag">SQL</span>
+      </div>
+    </div>
+
+    <div class="glass neon-border skill-card" data-aos="fade-up" data-aos-delay="200">
+      <h3 class="font-hud" style="color:var(--cyan);font-weight:700;font-size:1rem;letter-spacing:1px;"><i class="fa-solid fa-database"></i> Database</h3>
+      <div>
+        <span class="skill-tag">SQL Server</span><span class="skill-tag">Relational Design</span>
+        <span class="skill-tag">ER Diagrams</span><span class="skill-tag">Normalization</span>
+      </div>
+    </div>
+
+    <div class="glass neon-border skill-card" data-aos="fade-up">
+      <h3 class="font-hud" style="color:var(--cyan);font-weight:700;font-size:1rem;letter-spacing:1px;"><i class="fa-solid fa-cubes"></i> Software Development</h3>
+      <div>
+        <span class="skill-tag">OOP</span><span class="skill-tag">Software Engineering</span>
+        <span class="skill-tag">REST APIs</span><span class="skill-tag">CRUD Applications</span>
+      </div>
+    </div>
+
+    <div class="glass neon-border skill-card" data-aos="fade-up" data-aos-delay="100">
+      <h3 class="font-hud" style="color:var(--cyan);font-weight:700;font-size:1rem;letter-spacing:1px;"><i class="fa-solid fa-shield-halved"></i> Networking & Security</h3>
+      <div>
+        <span class="skill-tag">Cisco Packet Tracer</span><span class="skill-tag">Basic Networking</span>
+        <span class="skill-tag">Ethical Hacking Fundamentals</span><span class="skill-tag">Cloud Security Fundamentals</span>
+      </div>
+    </div>
+
+    <div class="glass neon-border skill-card" data-aos="fade-up" data-aos-delay="200">
+      <h3 class="font-hud" style="color:var(--cyan);font-weight:700;font-size:1rem;letter-spacing:1px;"><i class="fa-solid fa-toolbox"></i> Tools</h3>
+      <div>
+        <span class="skill-tag">Visual Studio</span><span class="skill-tag">VS Code</span>
+        <span class="skill-tag">Microsoft Office</span><span class="skill-tag">Git (learning)</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="eyebrow">03 // BUILD_LOG</p>
+  <h2 class="section-title">Projects</h2>
+  <div class="divider" style="max-width:120px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:1.6rem;margin-top:2.5rem;" class="md:grid-cols-2 lg:grid-cols-3">
+
+    <div class="glass neon-border project-card" data-aos="fade-up">
+      <div class="project-thumb"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div style="padding:1.2rem 1.3rem;">
+        <h3 class="font-hud" style="font-weight:700;font-size:1.05rem;">Student Management System</h3>
+        <div style="margin:.5rem 0;"><span class="tech-pill">Java</span> <span class="tech-pill">SQL</span></div>
+        <p style="font-size:.85rem;color:#9fb0b3;margin-bottom:.7rem;">A desktop application for managing student records, enrolment, and academic data.</p>
+        <ul class="feature-list" style="padding:0;margin:0 0 1rem;list-style:none;">
+          <li>CRUD record management</li>
+          <li>Relational database backend</li>
+          <li>Search & filter functionality</li>
+        </ul>
+        <div style="display:flex;gap:1rem;font-size:.78rem;">
+          <span class="link-disabled font-mono"><i class="fa-brands fa-github"></i> Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass neon-border project-card" data-aos="fade-up" data-aos-delay="100">
+      <div class="project-thumb"><i class="fa-solid fa-book"></i></div>
+      <div style="padding:1.2rem 1.3rem;">
+        <h3 class="font-hud" style="font-weight:700;font-size:1.05rem;">Library Management System</h3>
+        <div style="margin:.5rem 0;"><span class="tech-pill">C#</span></div>
+        <p style="font-size:.85rem;color:#9fb0b3;margin-bottom:.7rem;">A system for tracking book inventory, loans, and returns within a library setting.</p>
+        <ul class="feature-list" style="padding:0;margin:0 0 1rem;list-style:none;">
+          <li>Book check-in / check-out</li>
+          <li>Overdue tracking</li>
+          <li>Object-oriented architecture</li>
+        </ul>
+        <div style="display:flex;gap:1rem;font-size:.78rem;">
+          <span class="link-disabled font-mono"><i class="fa-brands fa-github"></i> Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass neon-border project-card" data-aos="fade-up" data-aos-delay="200">
+      <div class="project-thumb"><i class="fa-solid fa-chart-line"></i></div>
+      <div style="padding:1.2rem 1.3rem;">
+        <h3 class="font-hud" style="font-weight:700;font-size:1.05rem;">Decision Support System</h3>
+        <div style="margin:.5rem 0;"><span class="tech-pill">Database</span> <span class="tech-pill">Analytics</span></div>
+        <p style="font-size:.85rem;color:#9fb0b3;margin-bottom:.7rem;">A data-driven tool for analysing structured data to support decision-making.</p>
+        <ul class="feature-list" style="padding:0;margin:0 0 1rem;list-style:none;">
+          <li>Data aggregation & reporting</li>
+          <li>Query-driven insights</li>
+          <li>Structured database design</li>
+        </ul>
+        <div style="display:flex;gap:1rem;font-size:.78rem;">
+          <span class="link-disabled font-mono"><i class="fa-brands fa-github"></i> Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass neon-border project-card" data-aos="fade-up">
+      <div class="project-thumb"><i class="fa-solid fa-cart-shopping"></i></div>
+      <div style="padding:1.2rem 1.3rem;">
+        <h3 class="font-hud" style="font-weight:700;font-size:1.05rem;">Online Shopping Website</h3>
+        <div style="margin:.5rem 0;"><span class="tech-pill">HTML</span> <span class="tech-pill">CSS</span> <span class="tech-pill">JS</span> <span class="tech-pill">SQL</span></div>
+        <p style="font-size:.85rem;color:#9fb0b3;margin-bottom:.7rem;">A full-stack e-commerce site with product catalogue, cart, and checkout flow.</p>
+        <ul class="feature-list" style="padding:0;margin:0 0 1rem;list-style:none;">
+          <li>Product catalogue & cart</li>
+          <li>Database-backed inventory</li>
+          <li>Responsive front end</li>
+        </ul>
+        <div style="display:flex;gap:1rem;font-size:.78rem;">
+          <span class="link-disabled font-mono"><i class="fa-brands fa-github"></i> Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass neon-border project-card" data-aos="fade-up" data-aos-delay="100">
+      <div class="project-thumb"><i class="fa-solid fa-display"></i></div>
+      <div style="padding:1.2rem 1.3rem;">
+        <h3 class="font-hud" style="font-weight:700;font-size:1.05rem;">Portfolio Website</h3>
+        <div style="margin:.5rem 0;"><span class="tech-pill">Cyberpunk Design</span></div>
+        <p style="font-size:.85rem;color:#9fb0b3;margin-bottom:.7rem;">This site — a futuristic, OS-inspired portfolio built to showcase my work.</p>
+        <ul class="feature-list" style="padding:0;margin:0 0 1rem;list-style:none;">
+          <li>Custom animation system</li>
+          <li>Responsive, accessible layout</li>
+          <li>Interactive HUD interface</li>
+        </ul>
+        <div style="display:flex;gap:1rem;font-size:.78rem;">
+          <span class="link-disabled font-mono"><i class="fa-brands fa-github"></i> Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certs">
+  <p class="eyebrow">04 // CREDENTIALS</p>
+  <h2 class="section-title">Certifications</h2>
+  <div class="divider" style="max-width:120px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:1.4rem;margin-top:2.5rem;" class="md:grid-cols-3">
+    <div class="glass neon-border" style="padding:1.3rem;display:flex;gap:1rem;align-items:center;" data-aos="zoom-in">
+      <div class="badge-hex"><i class="fa-solid fa-network-wired"></i></div>
+      <div>
+        <p class="font-hud" style="font-weight:700;font-size:.95rem;">Intro to Cisco Packet Tracer</p>
+        <p class="font-mono" style="font-size:.7rem;color:#9fb0b3;">Cisco Networking Academy</p>
+        <p class="font-mono" style="font-size:.65rem;color:#5f7375;">Completed: [ADD DATE]</p>
+      </div>
+    </div>
+    <div class="glass neon-border" style="padding:1.3rem;display:flex;gap:1rem;align-items:center;" data-aos="zoom-in" data-aos-delay="100">
+      <div class="badge-hex"><i class="fa-solid fa-user-secret"></i></div>
+      <div>
+        <p class="font-hud" style="font-weight:700;font-size:.95rem;">Ethical Hacking 101</p>
+        <p class="font-mono" style="font-size:.7rem;color:#9fb0b3;">Provider</p>
+        <p class="font-mono" style="font-size:.65rem;color:#5f7375;">Completed: [ADD DATE]</p>
+      </div>
+    </div>
+    <div class="glass neon-border" style="padding:1.3rem;display:flex;gap:1rem;align-items:center;" data-aos="zoom-in" data-aos-delay="200">
+      <div class="badge-hex"><i class="fa-solid fa-cloud"></i></div>
+      <div>
+        <p class="font-hud" style="font-weight:700;font-size:.95rem;">Intro to Cloud Security</p>
+        <p class="font-mono" style="font-size:.7rem;color:#9fb0b3;">Simplilearn</p>
+        <p class="font-mono" style="font-size:.65rem;color:#5f7375;">Completed: [ADD DATE]</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE + EDUCATION -->
+<section id="experience">
+  <p class="eyebrow">05 // FIELD_LOG</p>
+  <h2 class="section-title">Experience & Education</h2>
+  <div class="divider" style="max-width:120px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:1.6rem;margin-top:2.5rem;" class="md:grid-cols-2">
+    <div class="glass neon-border panel-corner" style="padding:1.6rem;" data-aos="fade-right">
+      <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">CURRENT_YEAR</p>
+      <h3 class="font-hud" style="font-weight:700;font-size:1.15rem;margin:.3rem 0 .8rem;">Statistics Tutor</h3>
+      <p style="color:#c7d0d1;font-size:.9rem;line-height:1.7;">
+        Provide academic support to university students in Statistics through tutoring sessions, helping students understand statistical concepts, improve problem-solving skills, and prepare for assessments — while strengthening communication and leadership abilities.
+      </p>
+    </div>
+    <div class="glass neon-border panel-corner" style="padding:1.6rem;" data-aos="fade-left">
+      <p class="font-mono" style="color:var(--cyan);font-size:.75rem;">FINAL-YEAR_STUDENT</p>
+      <h3 class="font-hud" style="font-weight:700;font-size:1.15rem;margin:.3rem 0 .3rem;">North-West University</h3>
+      <p style="color:#9fb0b3;font-size:.85rem;margin-bottom:.8rem;">Vaal Triangle Campus</p>
+      <p style="color:#c7d0d1;font-size:.9rem;line-height:1.7;">Bachelor of Science — Information Technology</p>
+    </div>
+  </div>
+</section>
+
+<!-- INTERESTS -->
+<section id="interests">
+  <p class="eyebrow">06 // OFFLINE_MODULES</p>
+  <h2 class="section-title">Interests</h2>
+  <div class="divider" style="max-width:120px;"></div>
+  <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:2rem;">
+    <div class="glass neon-border interest-chip" data-aos="fade-up"><span class="ic">🎱</span><span class="font-hud" style="font-weight:600;">Pool</span></div>
+    <div class="glass neon-border interest-chip" data-aos="fade-up" data-aos-delay="50"><span class="ic">🏐</span><span class="font-hud" style="font-weight:600;">Volleyball</span></div>
+    <div class="glass neon-border interest-chip" data-aos="fade-up" data-aos-delay="100"><span class="ic">💻</span><span class="font-hud" style="font-weight:600;">Software Development</span></div>
+    <div class="glass neon-border interest-chip" data-aos="fade-up" data-aos-delay="150"><span class="ic">🛡️</span><span class="font-hud" style="font-weight:600;">Cybersecurity</span></div>
+    <div class="glass neon-border interest-chip" data-aos="fade-up" data-aos-delay="200"><span class="ic">🗄️</span><span class="font-hud" style="font-weight:600;">Database Systems</span></div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <p class="eyebrow">07 // TRAJECTORY</p>
+  <h2 class="section-title">Career Goals</h2>
+  <div class="divider" style="max-width:120px;"></div>
+
+  <div class="glass neon-border" style="margin-top:2.5rem;padding:1rem;overflow-x:auto;" data-aos="fade-up">
+    <div class="roadmap-track">
+      <div class="road-node current"><p class="font-mono" style="font-size:.65rem;color:var(--cyan);">NOW</p><p class="font-hud" style="font-weight:700;">Current</p></div>
+      <div class="road-arrow"><i class="fa-solid fa-chevron-right hidden md:inline"></i><i class="fa-solid fa-chevron-down md:hidden"></i></div>
+      <div class="road-node"><p class="font-mono" style="font-size:.65rem;color:#9fb0b3;">STEP</p><p class="font-hud" style="font-weight:700;">Graduate</p></div>
+      <div class="road-arrow"><i class="fa-solid fa-chevron-right hidden md:inline"></i><i class="fa-solid fa-chevron-down md:hidden"></i></div>
+      <div class="road-node"><p class="font-mono" style="font-size:.65rem;color:#9fb0b3;">STEP</p><p class="font-hud" style="font-weight:700;">Junior Software Developer</p></div>
+      <div class="road-arrow"><i class="fa-solid fa-chevron-right hidden md:inline"></i><i class="fa-solid fa-chevron-down md:hidden"></i></div>
+      <div class="road-node"><p class="font-mono" style="font-size:.65rem;color:#9fb0b3;">STEP</p><p class="font-hud" style="font-weight:700;">Software Engineer</p></div>
+      <div class="road-arrow"><i class="fa-solid fa-chevron-right hidden md:inline"></i><i class="fa-solid fa-chevron-down md:hidden"></i></div>
+      <div class="road-node goal"><p class="font-mono" style="font-size:.65rem;color:var(--purple);">GOAL</p><p class="font-hud" style="font-weight:700;">Solutions Architect</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <p class="eyebrow">08 // TRANSMISSION</p>
+  <h2 class="section-title">Contact</h2>
+  <div class="divider" style="max-width:120px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:2.5rem;margin-top:2.5rem;" class="md:grid-cols-[1fr_1.2fr]">
+    <div data-aos="fade-right">
+      <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;">
+        <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-envelope"></i> EMAIL</p>
+        <p class="font-hud" style="font-size:1rem;">your.email@example.com</p>
+      </div>
+      <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;">
+        <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-phone"></i> PHONE</p>
+        <p class="font-hud" style="font-size:1rem;">+27 00 000 0000</p>
+      </div>
+      <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;">
+        <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-location-dot"></i> LOCATION</p>
+        <p class="font-hud" style="font-size:1rem;">South Africa</p>
+      </div>
+      <div style="display:flex;gap:.8rem;margin-top:1.4rem;">
+        <a href="#" class="social-icon" title="GitHub — coming soon"><i class="fa-brands fa-github"></i></a>
+        <a href="#" class="social-icon" title="LinkedIn — profile coming soon"><i class="fa-brands fa-linkedin-in"></i></a>
+      </div>
+    </div>
+
+    <form class="glass neon-border panel-corner" style="padding:2rem;" id="contact-form" data-aos="fade-left">
+      <div style="margin-bottom:1.2rem;"><label>Name</label><input type="text" required placeholder="Your name" style="margin-top:.4rem;"></div>
+      <div style="margin-bottom:1.2rem;"><label>Email</label><input type="email" required placeholder="you@example.com" style="margin-top:.4rem;"></div>
+      <div style="margin-bottom:1.4rem;"><label>Message</label><textarea rows="4" required placeholder="Say hello..." style="margin-top:.4rem;"></textarea></div>
+      <button type="submit" class="btn-primary" style="border:none;cursor:pointer;width:100%;justify-content:center;">
+        <i class="fa-solid fa-paper-plane"></i> Send Transmission
+      </button>
+      <p id="form-status" class="font-mono" style="font-size:.72rem;color:var(--cyan);margin-top:.9rem;min-height:1rem;"></p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div style="max-width:1300px;margin:0 auto;display:flex;flex-direction:column;gap:1.4rem;align-items:center;text-align:center;">
+    <p class="font-hud" style="color:var(--cyan);font-style:italic;font-size:1rem;">"Technology is best when it empowers people."</p>
+    <nav style="display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;">
+      <a href="#about" class="nav-link">About</a>
+      <a href="#skills" class="nav-link">Skills</a>
+      <a href="#projects" class="nav-link">Projects</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+    <div style="display:flex;gap:.8rem;">
+      <a href="#" class="social-icon"><i class="fa-brands fa-github"></i></a>
+      <a href="#" class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+    </div>
+    <p class="font-mono" style="font-size:.7rem;color:#5f7375;">© <span id="year"></span> Your Name. All systems operational.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ===== AOS ===== */
+AOS.init({ duration: 800, once: true, offset: 60 });
+
+/* ===== CUSTOM CURSOR ===== */
+const glow = document.getElementById('cursor-glow');
+const dot = document.getElementById('cursor-dot');
+window.addEventListener('mousemove', e=>{
+  glow.style.left = e.clientX+'px'; glow.style.top = e.clientY+'px';
+  dot.style.left = e.clientX+'px'; dot.style.top = e.clientY+'px';
+});
+document.querySelectorAll('a,button,input,textarea').forEach(el=>{
+  el.addEventListener('mouseenter', ()=>{ glow.style.width='42px'; glow.style.height='42px'; });
+  el.addEventListener('mouseleave', ()=>{ glow.style.width='26px'; glow.style.height='26px'; });
+});
+
+/* ===== SCROLL PROGRESS ===== */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop)/((h.scrollHeight)-h.clientHeight)*100;
+  document.getElementById('scroll-progress').style.width = pct+'%';
+});
+
+/* ===== HUD CLOCK ===== */
+function tick(){
+  const el = document.getElementById('hud-clock');
+  el.style.display = window.innerWidth > 768 ? 'inline' : 'none';
+  el.textContent = new Date().toLocaleTimeString('en-GB');
+}
+setInterval(tick, 1000); tick();
+
+/* ===== MODE TOGGLE (cyan / neon-purple) ===== */
+const modeBtn = document.getElementById('mode-toggle');
+modeBtn.addEventListener('click', ()=>{
+  document.documentElement.classList.toggle('neon');
+  modeBtn.textContent = document.documentElement.classList.contains('neon') ? 'PURPLE_MODE' : 'CYAN_MODE';
+});
+
+/* ===== TYPEWRITER ===== */
+const phrases = ["Building reliable software, secure systems, and data-driven solutions."];
+let pi=0, ci=0, deleting=false;
+const twEl = document.getElementById('typewriter');
+function typeLoop(){
+  const current = phrases[pi];
+  if(!deleting){
+    twEl.textContent = current.slice(0, ci+1); ci++;
+    if(ci === current.length){ deleting = true; setTimeout(typeLoop, 1800); return; }
+  } else {
+    twEl.textContent = current.slice(0, ci-1); ci--;
+    if(ci === 0){ deleting = false; pi = (pi+1)%phrases.length; }
+  }
+  setTimeout(typeLoop, deleting ? 35 : 55);
+}
+typeLoop();
+
+/* ===== SKILL BARS ON SCROLL ===== */
+const bars = document.querySelectorAll('.skill-bar-fill');
+const barObserver = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.style.width = entry.target.dataset.w + '%';
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, {threshold:.4});
+bars.forEach(b=>barObserver.observe(b));
+
+/* ===== CONTACT FORM (front-end only) ===== */
+document.getElementById('contact-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  document.getElementById('form-status').textContent = '> Transmission received. I will respond shortly.';
+  e.target.reset();
+});
+
+/* ===== HERO PARTICLE NETWORK ===== */
+(function(){
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let w,h,particles=[];
+  function resize(){
+    w = canvas.width = canvas.parentElement.offsetWidth;
+    h = canvas.height = canvas.parentElement.offsetHeight;
+  }
+  resize(); window.addEventListener('resize', resize);
+  const COUNT = Math.min(70, Math.floor((window.innerWidth*window.innerHeight)/18000));
+  for(let i=0;i<COUNT;i++){
+    particles.push({x:Math.random()*w, y:Math.random()*h, vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4});
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(0,245,255,0.7)';
+    for(const p of particles){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>w) p.vx*=-1;
+      if(p.y<0||p.y>h) p.vy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,1.6,0,Math.PI*2); ctx.fill();
+    }
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const a=particles[i], b=particles[j];
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        if(d<130){
+          ctx.strokeStyle = `rgba(0,157,255,${1-d/130})`;
+          ctx.lineWidth=.6;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ===== MATRIX LOADER ===== */
+(function(){
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const chars = "01アイウエオカキクケコ01SQL01JAVA01C#";
+  const fontSize = 15;
+  const columns = Math.floor(canvas.width/fontSize);
+  const drops = Array(columns).fill(1);
+  function drawMatrix(){
+    ctx.fillStyle='rgba(0,0,0,0.08)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#00F5FF';
+    ctx.font=fontSize+'px monospace';
+    for(let i=0;i<drops.length;i++){
+      const text = chars[Math.floor(Math.random()*chars.length)];
+      ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+      if(drops[i]*fontSize > canvas.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+    }
+  }
+  const matrixInterval = setInterval(drawMatrix, 45);
+
+  /* boot text */
+  const bootLines = [
+    "> INITIALIZING SYSTEM_KERNEL...",
+    "> LOADING PROFILE: YOUR_NAME.dev",
+    "> MOUNTING /skills /projects /education",
+    "> ESTABLISHING SECURE CONNECTION...",
+    "> WELCOME."
+  ];
+  const bootEl = document.getElementById('boot-text');
+  let li=0;
+  function nextLine(){
+    if(li < bootLines.length){
+      bootEl.textContent += bootLines[li] + "\n";
+      li++;
+      setTimeout(nextLine, 380);
+    }
+  }
+  nextLine();
+
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+      document.getElementById('loader').classList.add('hide');
+      clearInterval(matrixInterval);
+    }, 2300);
+  });
+})();
+</script>
+</body>
+</html>
