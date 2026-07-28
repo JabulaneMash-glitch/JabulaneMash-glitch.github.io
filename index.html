@@ -344,15 +344,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   <canvas id="hero-canvas"></canvas>
   <div style="position:relative;z-index:5;width:100%;display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:center;" class="md:grid-cols-[1.3fr_.7fr]">
     <div data-aos="fade-up">
-      <p class="eyebrow" style="margin-bottom:1rem;">// SYSTEM_PROFILE :: FINAL_YEAR_STUDENT</p>
-      <h1 class="font-display glitch" data-text="JABULANE MASHININI" style="font-size:clamp(2.4rem,7vw,5rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:1px;margin:0 0 .6rem 0;">JABULANE MASHININI</h1>
-      <p class="font-hud" style="font-size:1.15rem;color:var(--cyan);font-weight:600;letter-spacing:.5px;margin:0 0 .3rem 0;">Final-Year BSc Information Technology Student</p>
-      <p class="font-hud" style="font-size:1rem;color:#9fb0b3;margin:0 0 1.6rem 0;">North-West University — Vaal Triangle Campus</p>
+      <p class="eyebrow" style="margin-bottom:1rem;">// SOFTWARE_DEVELOPER :: DATABASE_ENTHUSIAST :: FINAL_YEAR</p>
+      <h1 class="font-display glitch" data-text="JABULANE // MASHININI" style="font-size:clamp(2.4rem,7vw,5rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:1px;margin:0 0 .6rem 0;">JABULANE<br> <span style="color:var(--cyan);">//</span> MASHININI</h1>
+      <p class="font-hud" style="font-size:1.15rem;color:var(--cyan);font-weight:600;letter-spacing:.5px;margin:0 0 .3rem 0;">Software Developer • Database Enthusiast • IT Student</p>
+      <p class="font-hud" style="font-size:1rem;color:#9fb0b3;margin:0 0 1.6rem 0;">North-West University | Vaal Triangle Campus</p>
       <p id="typewriter" class="font-mono type-cursor" style="font-size:1rem;color:var(--white);min-height:2.6rem;max-width:560px;line-height:1.6;"></p>
       <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.8rem;">
-        <a href="#projects" class="btn-primary"><i class="fa-solid fa-diagram-project"></i> View Projects</a>
+        <a href="#projects" class="btn-primary"><i class="fa-solid fa-diagram-project"></i> Explore Projects</a>
         <a href="#" class="btn-ghost"><i class="fa-solid fa-download"></i> Download CV</a>
-        <a href="#contact" class="btn-ghost"><i class="fa-solid fa-satellite-dish"></i> Contact Me</a>
+        <a href="#contact" class="btn-ghost"><i class="fa-solid fa-satellite-dish"></i> Get In Touch</a>
       </div>
     </div>
     <div class="glass panel-corner neon-border" style="padding:1.4rem;justify-self:center;" data-aos="fade-left" data-aos-delay="200">
@@ -755,7 +755,14 @@ modeBtn.addEventListener('click', ()=>{
 });
 
 /* ===== TYPEWRITER ===== */
-const phrases = ["Building reliable software, secure systems, and data-driven solutions."];
+const phrases = [
+  "> Building efficient software solutions.",
+  "> Designing scalable SQL databases.",
+  "> Developing backend applications with C# and Java.",
+  "> Statistics Tutor at North-West University.",
+  "> Aspiring Software Developer | Database Enthusiast.",
+  "> Seeking Graduate Software Developer Opportunities."
+];
 let pi=0, ci=0, deleting=false;
 const twEl = document.getElementById('typewriter');
 function typeLoop(){
