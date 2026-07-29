@@ -18,6 +18,30 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
 
 <style>
+
+:root {
+  --bg-main: #06090e;
+  --white: #ffffff;
+  --cyan: #00f5ff;
+  --purple: #9d4edd;
+  --panel-bg: rgba(12, 18, 28, 0.75);
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] {
+  --bg-main: #f0f4f8;
+  --white: #0f172a;
+  --cyan: #0077b6;
+  --purple: #7209b7;
+  --panel-bg: rgba(255, 255, 255, 0.85);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--white);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+  
 /* ============ TOKENS ============ */
 :root{
   --bg-void:#090909;
@@ -875,7 +899,8 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 /* ===== AOS ===== */
 AOS.init({ duration: 800, once: true, offset: 60 });
-
+const rootElement = document.documentElement;   
+  
 /* ===== CUSTOM CURSOR ===== */
 const glow = document.getElementById('cursor-glow');
 const dot = document.getElementById('cursor-dot');
@@ -888,6 +913,24 @@ document.querySelectorAll('a,button,input,textarea').forEach(el=>{
   el.addEventListener('mouseleave', ()=>{ glow.style.width='26px'; glow.style.height='26px'; });
 });
 
+/* ==========================================================================
+   2. HUD CLOCK & COPYRIGHT YEAR
+   ========================================================================== */
+function updateHUDClock() {
+  const clockElement = document.getElementById('hud-clock');
+  if (clockElement) {
+    const now = new Date();
+    clockElement.textContent = now.toTimeString().split(' ')[0];
+  }
+}
+setInterval(updateHUDClock, 1000);
+updateHUDClock();
+
+const yearSpan = document.getElementById('year');
+if (yearSpan) {
+  yearSpan.textContent = new Date().getFullYear();
+}
+  
 /* ===== SCROLL PROGRESS ===== */
 window.addEventListener('scroll', ()=>{
   const h = document.documentElement;
@@ -903,12 +946,31 @@ function tick(){
 }
 setInterval(tick, 1000); tick();
 
-/* ===== MODE TOGGLE (cyan / neon-purple) ===== */
-const modeBtn = document.getElementById('mode-toggle');
-modeBtn.addEventListener('click', ()=>{
-  document.documentElement.classList.toggle('neon');
-  modeBtn.textContent = document.documentElement.classList.contains('neon') ? 'PURPLE_MODE' : 'CYAN_MODE';
+/* ===== MODE TOGGLE (cyan / neon-purple / light-dark) ===== */
+const modeToggleBtn = document.getElementById('mode-toggle');
+
+function applyTheme(theme) {
+  rootElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+
+  if (theme === 'light') {
+    modeToggleBtn.textContent = 'DARK_MODE';
+    modeToggleBtn.classList.add('active-light');
+  } else {
+    modeToggleBtn.textContent = rootElement.classList.contains('neon') ? 'PURPLE_MODE' : 'CYAN_MODE';
+    modeToggleBtn.classList.remove('active-light');
+  }
+}
+
+modeToggleBtn.addEventListener('click', () => {
+  const currentTheme = rootElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(newTheme);
+  rootElement.classList.toggle('neon');
 });
+
+// Load saved theme preference or default to dark (cyan) mode
+applyTheme(localStorage.getItem('theme') || 'dark');
 
 /* ===== TYPEWRITER ===== */
 const phrases = [
@@ -1041,6 +1103,8 @@ document.getElementById('contact-form').addEventListener('submit', e=>{
     }, 2300);
   });
 })();
+
+
 </script>
 </body>
 </html>
