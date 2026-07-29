@@ -50,80 +50,6 @@ h1,h2,h3,.font-display{font-family:'Orbitron',sans-serif;}
 .font-hud{font-family:'Rajdhani',sans-serif;}
 .font-mono{font-family:'JetBrains Mono',monospace;}
 
-  /* ============ CYBERPUNK LIGHT MODE & ACCENTS ============ */
-:root {
-  --cp-yellow: #fbee04;
-  --cp-red: #ff0055;
-  --cp-orange: #ff5500;
-  --cp-indigo: #120e2e;
-  --cp-purple: #9d00ff;
-  --cp-cyan: #00f0ff;
-}
-
-/* Light Mode Theme Overrides */
-html.light-mode {
-  --bg-void: #fbee04;          /* Official CP2077 Yellow Background */
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --white: #0d0b1d;            /* Text becomes deep indigo */
-  --cyan: #ff0055;             /* Primary accent shifts to fiery red */
-  --purple: #7000ff;           /* Secondary accent shifts to deep purple */
-  color: #0d0b1d;
-}
-
-html.light-mode .glass {
-  background: rgba(255, 255, 255, 0.75) !important;
-  border-color: rgba(13, 11, 29, 0.15) !important;
-  color: #0d0b1d !important;
-  box-shadow: 0 8px 32px 0 rgba(255, 0, 85, 0.15);
-}
-
-html.light-mode input,
-html.light-mode textarea {
-  background: rgba(255, 255, 255, 0.9) !important;
-  color: #0d0b1d !important;
-  border: 1px solid #ff0055 !important;
-}
-
-/* ============ PULSING NEON GRID LINES ============ */
-.cyber-lines-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-  opacity: 0.6;
-}
-
-.cyber-line {
-  position: absolute;
-  background: linear-gradient(90deg, transparent, var(--line-color, #00f0ff), transparent);
-  height: 2px;
-  width: 100%;
-  animation: pulseLine 4s infinite ease-in-out;
-}
-
-/* Vertical glowing grid lines */
-.cyber-line-v {
-  position: absolute;
-  background: linear-gradient(180deg, transparent, var(--line-color, #ff0055), transparent);
-  width: 2px;
-  height: 100%;
-  animation: pulseLineV 5s infinite ease-in-out;
-}
-
-@keyframes pulseLine {
-  0%, 100% { opacity: 0.1; transform: translateY(0) scaleX(0.8); }
-  50% { opacity: 0.8; transform: translateY(10px) scaleX(1); }
-}
-
-@keyframes pulseLineV {
-  0%, 100% { opacity: 0.1; transform: translateX(0) scaleY(0.8); }
-  50% { opacity: 0.8; transform: translateX(15px) scaleY(1); }
-}
-
 /* ============ GLITCH EFFECT ============ */
 .glitch {
   position: relative;
@@ -440,16 +366,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 <div class="grid-bg"></div>
 <div class="vignette"></div>
 <div class="scanlines"></div>
-
-<!-- PULSING CYBERPUNK BACKGROUND LINES -->
-<div class="cyber-lines-bg">
-  <div class="cyber-line" style="top: 15%; --line-color: #ff0055; animation-delay: 0s;"></div>
-  <div class="cyber-line" style="top: 45%; --line-color: #9d00ff; animation-delay: 1.5s;"></div>
-  <div class="cyber-line" style="top: 75%; --line-color: #fbee04; animation-delay: 3s;"></div>
-  
-  <div class="cyber-line-v" style="left: 20%; --line-color: #00f0ff; animation-delay: 0.5s;"></div>
-  <div class="cyber-line-v" style="left: 80%; --line-color: #ff5500; animation-delay: 2s;"></div>
-</div>
   
 <!-- HUD -->
 <header id="hud">
@@ -970,22 +886,6 @@ window.addEventListener('mousemove', e=>{
 document.querySelectorAll('a,button,input,textarea').forEach(el=>{
   el.addEventListener('mouseenter', ()=>{ glow.style.width='42px'; glow.style.height='42px'; });
   el.addEventListener('mouseleave', ()=>{ glow.style.width='26px'; glow.style.height='26px'; });
-});
-
-// Cyberpunk Theme Toggle (Dark Cyberpunk <-> Yellow Light Mode)
-const modeBtn = document.getElementById('mode-toggle');
-modeBtn.addEventListener('click', () => {
-  document.documentElement.classList.toggle('light-mode');
-  
-  if (document.documentElement.classList.contains('light-mode')) {
-    modeBtn.textContent = 'DARK_MODE';
-    modeBtn.style.color = '#0d0b1d';
-    modeBtn.style.borderColor = '#ff0055';
-  } else {
-    modeBtn.textContent = 'LIGHT_MODE';
-    modeBtn.style.color = 'var(--cyan)';
-    modeBtn.style.borderColor = 'var(--cyan)';
-  }
 });
   
 /* ===== SCROLL PROGRESS ===== */
