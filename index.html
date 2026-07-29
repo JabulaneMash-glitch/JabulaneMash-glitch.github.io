@@ -794,28 +794,56 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 
   <div style="display:grid;grid-template-columns:1fr;gap:2.5rem;margin-top:2.5rem;" class="md:grid-cols-[1fr_1.2fr]">
     <div data-aos="fade-right">
-      <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;">
-        <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-envelope"></i> EMAIL</p>
-        <p class="font-hud" style="font-size:1rem;">jabulanemashinini686@gmail.com</p>
-      </div>
-      <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;">
-        <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-phone"></i> PHONE</p>
-        <p class="font-hud" style="font-size:1rem;">+27 81 458 0986</p>
-      </div>
+      <!-- EMAIL LINK -->
+      <a href="mailto:jabulanemashinini686@gmail.com" style="text-decoration:none;color:inherit;display:block;">
+        <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;transition:transform 0.2s ease, border-color 0.2s ease;">
+          <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-envelope"></i> EMAIL</p>
+          <p class="font-hud" style="font-size:1rem;margin:0;">jabulanemashinini686@gmail.com</p>
+        </div>
+      </a>
+
+      <!-- PHONE LINK -->
+      <a href="tel:+27814580986" style="text-decoration:none;color:inherit;display:block;">
+        <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;transition:transform 0.2s ease, border-color 0.2s ease;">
+          <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-phone"></i> PHONE</p>
+          <p class="font-hud" style="font-size:1rem;margin:0;">+27 81 458 0986</p>
+        </div>
+      </a>
+
+      <!-- LOCATION -->
       <div class="glass neon-border panel-corner" style="padding:1.6rem;margin-bottom:1.2rem;">
         <p class="font-mono" style="font-size:.7rem;color:var(--cyan);"><i class="fa-solid fa-location-dot"></i> LOCATION</p>
-        <p class="font-hud" style="font-size:1rem;">South Africa</p>
+        <p class="font-hud" style="font-size:1rem;margin:0;">South Africa</p>
       </div>
+
+      <!-- SOCIAL HYPERLINKS -->
       <div style="display:flex;gap:.8rem;margin-top:1.4rem;">
-        <a href="#" class="social-icon" title="GitHub — coming soon"><i class="fa-brands fa-github"></i></a>
-        <a href="#" class="social-icon" title="LinkedIn — profile coming soon"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="https://github.com/JabulaneMash-glitch" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub Profile">
+          <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/jabulane-mashinini" target="_blank" rel="noopener noreferrer" class="social-icon" title="LinkedIn Profile">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+        <a href="https://www.instagram.com/mashjabulane?igsh=bHZuNHRtam5mZm5n" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram Profile">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
       </div>
     </div>
 
+    <!-- CONTACT FORM -->
     <form class="glass neon-border panel-corner" style="padding:2rem;" id="contact-form" data-aos="fade-left">
-      <div style="margin-bottom:1.2rem;"><label>Name</label><input type="text" required placeholder="Your name" style="margin-top:.4rem;"></div>
-      <div style="margin-bottom:1.2rem;"><label>Email</label><input type="email" required placeholder="you@example.com" style="margin-top:.4rem;"></div>
-      <div style="margin-bottom:1.4rem;"><label>Message</label><textarea rows="4" required placeholder="Say hello..." style="margin-top:.4rem;"></textarea></div>
+      <div style="margin-bottom:1.2rem;">
+        <label for="contact-name">Name</label>
+        <input type="text" id="contact-name" required placeholder="Your name" style="margin-top:.4rem;width:100%;">
+      </div>
+      <div style="margin-bottom:1.2rem;">
+        <label for="contact-email">Email</label>
+        <input type="email" id="contact-email" required placeholder="you@gmail.com.com" style="margin-top:.4rem;width:100%;">
+      </div>
+      <div style="margin-bottom:1.4rem;">
+        <label for="contact-msg">Message</label>
+        <textarea id="contact-msg" rows="4" required placeholder="Say hello..." style="margin-top:.4rem;width:100%;"></textarea>
+      </div>
       <button type="submit" class="btn-primary" style="border:none;cursor:pointer;width:100%;justify-content:center;">
         <i class="fa-solid fa-paper-plane"></i> Send Transmission
       </button>
