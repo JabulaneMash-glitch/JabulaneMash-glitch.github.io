@@ -20,54 +20,42 @@
 <style>
 
 :root {
-  --bg-main: #06090e;
-  --white: #ffffff;
-  --cyan: #00f5ff;
-  --purple: #9d4edd;
+  --bg-main: #090909;
+  --bg-panel: #121212;
+  --bg-panel-2: #0d1416;
+  --white: #EAEAEA;
+  --cyan: #00F5FF;
+  --blue: #009DFF;
+  --purple: #8A2BE2;
   --panel-bg: rgba(12, 18, 28, 0.75);
-}
-
-/* Light Theme Overrides */
-[data-theme="light"] {
-  --bg-main: #f0f4f8;
-  --white: #0f172a;
-  --cyan: #0077b6;
-  --purple: #7209b7;
-  --panel-bg: rgba(255, 255, 255, 0.85);
-}
-
-body {
-  background-color: var(--bg-main);
-  color: var(--white);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-  
-/* ============ TOKENS ============ */
-:root{
-  --bg-void:#090909;
-  --bg-panel:#121212;
-  --bg-panel-2:#0d1416;
-  --cyan:#00F5FF;
-  --blue:#009DFF;
-  --purple:#8A2BE2;
-  --white:#EAEAEA;
   --line: rgba(0,245,255,0.18);
   --glow-cyan: 0 0 18px rgba(0,245,255,.55);
   --glow-purple: 0 0 22px rgba(138,43,226,.55);
   --mode-accent: var(--cyan);
 }
-html.neon{
+
+/* Light Theme Overrides */
+html[data-theme="light"] {
+  --bg-main: #f0f4f8;
+  --white: #0f172a;
+  --cyan: #0077b6;
+  --purple: #7209b7;
+  --panel-bg: rgba(255, 255, 255, 0.85);
+  --line: rgba(0,119,182,0.18);
+}
+
+html.neon {
   --mode-accent: var(--purple);
 }
-*{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
+
+body {
   margin:0;
-  background:var(--bg-void);
-  color:var(--white);
-  font-family:'Inter',sans-serif;
-  overflow-x:hidden;
-  cursor:none;
+  background: var(--bg-main);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 ::selection{background:var(--cyan);color:#000;}
 h1,h2,h3,.font-display{font-family:'Orbitron',sans-serif;}
@@ -88,7 +76,7 @@ h1,h2,h3,.font-display{font-family:'Orbitron',sans-serif;}
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--bg-void);
+  background: var(--bg-main);
   clip-path: inset(50% 0 50% 0);
   pointer-events: none;
 }
@@ -252,7 +240,7 @@ section{position:relative;z-index:5;padding:5.5rem 1.5rem;max-width:1300px;margi
 .glitch{position:relative;}
 .glitch::before,.glitch::after{
   content:attr(data-text);position:absolute;left:0;top:0;width:100%;
-  overflow:hidden;background:var(--bg-void);
+  overflow:hidden;background:var(--bg-main);
 }
 .glitch::before{color:var(--cyan);left:2px;text-shadow:-1px 0 var(--purple);animation:glitchTop 5s infinite linear alternate-reverse;}
 .glitch::after{color:var(--purple);left:-2px;text-shadow:1px 0 var(--cyan);animation:glitchBot 6s infinite linear alternate-reverse;}
@@ -281,7 +269,7 @@ section{position:relative;z-index:5;padding:5.5rem 1.5rem;max-width:1300px;margi
 .timeline-item{position:relative;padding-bottom:2.4rem;padding-left:1.5rem;}
 .timeline-item::before{
   content:'';position:absolute;left:-2.55rem;top:2px;width:14px;height:14px;border-radius:50%;
-  background:var(--bg-void);border:2px solid var(--cyan);box-shadow:0 0 10px var(--cyan);
+  background:var(--bg-main);border:2px solid var(--cyan);box-shadow:0 0 10px var(--cyan);
 }
 .timeline-item.future::before{border-color:var(--purple);box-shadow:0 0 10px var(--purple);}
 .timeline-item:last-child{padding-bottom:0;}
@@ -407,7 +395,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
     </nav>
     <div style="display:flex;align-items:center;gap:14px;">
       <span class="font-mono" id="hud-clock" style="font-size:.72rem;color:#9fb0b3;display:none;" class="md:inline">00:00:00</span>
-      <button class="mode-toggle" id="mode-toggle">CYAN_MODE</button>
+      <button class="mode-toggle" id="theme-toggle">DARK_MODE</button>
+      <button class="mode-toggle" id="accent-toggle">CYAN_MODE</button>
     </div>
   </div>
 </header>
@@ -946,32 +935,38 @@ function tick(){
 }
 setInterval(tick, 1000); tick();
 
-/* ===== MODE TOGGLE (cyan / neon-purple / light-dark) ===== */
-const modeToggleBtn = document.getElementById('mode-toggle');
+/* ===== THEME TOGGLE (light / dark) ===== */
+const themeToggleBtn = document.getElementById('theme-toggle');
 
-function applyTheme(theme) {
-  rootElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-
-  if (theme === 'light') {
-    modeToggleBtn.textContent = 'DARK_MODE';
-    modeToggleBtn.classList.add('active-light');
-  } else {
-    modeToggleBtn.textContent = rootElement.classList.contains('neon') ? 'PURPLE_MODE' : 'CYAN_MODE';
-    modeToggleBtn.classList.remove('active-light');
-  }
+function applyColorScheme(scheme) {
+  rootElement.setAttribute('data-theme', scheme);
+  localStorage.setItem('colorScheme', scheme);
+  themeToggleBtn.textContent = scheme === 'light' ? 'LIGHT_MODE' : 'DARK_MODE';
 }
 
-modeToggleBtn.addEventListener('click', () => {
-  const currentTheme = rootElement.getAttribute('data-theme') || 'dark';
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  applyTheme(newTheme);
-  rootElement.classList.toggle('neon');
+themeToggleBtn.addEventListener('click', () => {
+  const current = rootElement.getAttribute('data-theme') || 'dark';
+  applyColorScheme(current === 'dark' ? 'light' : 'dark');
 });
 
-// Load saved theme preference or default to dark (cyan) mode
-applyTheme(localStorage.getItem('theme') || 'dark');
+applyColorScheme(localStorage.getItem('colorScheme') || 'dark');
 
+/* ===== ACCENT TOGGLE (cyan / purple) ===== */
+const accentToggleBtn = document.getElementById('accent-toggle');
+
+function applyAccent(accent) {
+  rootElement.classList.toggle('neon', accent === 'purple');
+  localStorage.setItem('accent', accent);
+  accentToggleBtn.textContent = accent === 'purple' ? 'PURPLE_MODE' : 'CYAN_MODE';
+}
+
+accentToggleBtn.addEventListener('click', () => {
+  const current = localStorage.getItem('accent') || 'cyan';
+  applyAccent(current === 'cyan' ? 'purple' : 'cyan');
+});
+
+applyAccent(localStorage.getItem('accent') || 'cyan');
+  
 /* ===== TYPEWRITER ===== */
 const phrases = [
   "> Building efficient software solutions.",
